@@ -9,7 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.example.mapsdemo.BuildConfig
-import com.example.mapsdemo.MapsActivity
+import com.example.mapsdemo.map_screen.MapsActivity
 import com.example.mapsdemo.R
 import com.example.mapsdemo.data.model.Bump
 import com.google.android.gms.location.Priority

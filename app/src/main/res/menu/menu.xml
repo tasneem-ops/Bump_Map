@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/turn_off"
+        android:title="Turn off notifications"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/turn_on"
+        android:title="Turn on notifications"
+        app:showAsAction="never"/>
+</menu>

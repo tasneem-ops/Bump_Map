@@ -8,5 +8,6 @@ import java.util.*
 data class Bump(
     var latitude : Double,
     var longitude : Double,
-    @PrimaryKey val id: String = UUID.randomUUID().toString()
+    var radius : Double,
+    @PrimaryKey val id : String
 )

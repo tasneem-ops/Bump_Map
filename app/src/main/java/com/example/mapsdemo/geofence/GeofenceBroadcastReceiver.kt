@@ -9,7 +9,5 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.d("Geofence", "BroadCast receiver received a Geofence !!!")
         GeofenceTransitionsJobIntentService.enqueueWork(context!!, intent!!)
-
-
     }
 }

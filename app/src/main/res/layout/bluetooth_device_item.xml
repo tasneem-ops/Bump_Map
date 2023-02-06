@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="bluetooth_device"
+            type="com.example.mapsdemo.data.model.Bluetooth_Device"/>
+                <variable
+                    name="clickListener"
+                    type="com.example.mapsdemo.bluetooth.BluetoothDeviceListListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{()-> clickListener.onClick(bluetooth_device)}">
+
+        <ImageView
+            android:id="@+id/book_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/mobile"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/book_image"
+            app:layout_constraintTop_toTopOf="@+id/book_image"
+            android:text="@{bluetooth_device.name}"/>
+
+        <TextView
+            android:id="@+id/author_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/name_text"
+            app:layout_constraintStart_toStartOf="@+id/name_text"
+            app:layout_constraintTop_toBottomOf="@+id/name_text"
+            android:text="@{bluetooth_device.MAC}"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

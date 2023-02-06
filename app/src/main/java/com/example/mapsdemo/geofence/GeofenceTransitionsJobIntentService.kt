@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.JobIntentService
+import com.example.mapsdemo.bluetooth.BluetoothFragment.Companion.m_bluetoothChatService
+import com.example.mapsdemo.bluetooth.BluetoothService
+import com.example.mapsdemo.map_screen.MapsActivity
 import com.example.mapsdemo.data.local.BumpDao
 import com.example.mapsdemo.data.repository.LocalRepository
 import com.example.mapsdemo.utils.sendRealNotification
@@ -12,6 +15,7 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import kotlinx.coroutines.*
+import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
@@ -65,12 +69,22 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         for (triggeringGeofence in triggeringGeofences){
             val requestId = triggeringGeofence.requestId
                     //send a notification to the user with the reminder details
-                    sendRealNotification(
-                        this@GeofenceTransitionsJobIntentService
-                    )
-
+            sendRealNotification(
+            this@GeofenceTransitionsJobIntentService
+            )
+            sendCommand("1")
             }
         }
-
+    private fun sendCommand(out: String) {
+        m_bluetoothChatService?.write(out.toByteArray())
+        //Old Code.. Not used Any More
+//        if (BluetoothService.embeddedSocket != null) {
+//            try{
+//                BluetoothService.embeddedSocket!!.outputStream.write(input.toByteArray())
+//            } catch(e: IOException) {
+//                e.printStackTrace()
+//            }
+//        }
+    }
     }
 

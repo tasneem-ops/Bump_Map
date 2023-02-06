@@ -1,9 +1,8 @@
-package com.example.mapsdemo
+package com.example.mapsdemo.map_screen
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -11,34 +10,37 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.location.LocationRequest
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
-import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
+import com.example.mapsdemo.BuildConfig
+import com.example.mapsdemo.MainViewModel
+import com.example.mapsdemo.R
+import com.example.mapsdemo.data.model.Bump
+import com.example.mapsdemo.data.model.BumpData
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.example.mapsdemo.databinding.ActivityMapsBinding
-import com.example.mapsdemo.geofence.GeofenceBroadcastReceiver
+import com.example.mapsdemo.geofence.GeofencesUtilFunctions
 import com.example.mapsdemo.geofence.GeofencingConstants
-import com.example.mapsdemo.utils.LocationListenerUtils
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.gms.location.*
 
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.*
+import com.google.firebase.database.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     OnMapsSdkInitializedCallback {
-
     private lateinit var mMap : GoogleMap
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMapsBinding
@@ -47,58 +49,78 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     private  var latitude : Double? = null
     private var longitude : Double? = null
     private lateinit var locationManager: LocationManager
-    private val geofencePendingIntent: PendingIntent by lazy {
-        val intent = Intent(applicationContext, GeofenceBroadcastReceiver::class.java)
-        PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
-    private lateinit var geofencingClient: GeofencingClient
+    private lateinit var geofencesUtilFunctions : GeofencesUtilFunctions
+    private lateinit var databaseReference: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, this);
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        val viewModelFactory = ViewModelFactory(application)
+        val viewModelFactory = ViewModelFactory(application )
         viewModel = ViewModelProvider(this , viewModelFactory).get(MainViewModel::class.java)
-        geofencingClient = LocationServices.getGeofencingClient(this)
+        geofencesUtilFunctions = GeofencesUtilFunctions(applicationContext, this)
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Bumps")
+
         binding.addBump.setOnClickListener {
-//            Toast.makeText(applicationContext, "Current Geofence will be saved at location"+
-//                    viewModel.latitude.value +viewModel.longitude.value,
-//            Toast.LENGTH_LONG).show()
-            addGeofence()
-        }
-    }
+            if(foregroundAndBackgroundLocationPermissionApproved() && (latitude!= null) && (longitude!=null)){
+                val id = databaseReference.push().key!!
+                viewModel.saveBump(Bump(
+                    latitude!!, longitude!!,
+                    GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id
+                ))
+                databaseReference.child(id!!).setValue(Bump(latitude!!, longitude!!,
+                    GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id))
+                    .addOnSuccessListener {
+                        Toast.makeText(applicationContext, "Book is Successfully Uploaded!", Toast.LENGTH_LONG).show()
+                    }
+                    .addOnFailureListener { err ->
+                        Toast.makeText(applicationContext, "Error: ${err.message}", Toast.LENGTH_LONG).show()
+                    }
+                geofencesUtilFunctions.addGeofence(latitude!!, longitude!!)
 
-    @SuppressLint("MissingPermission")
-    private fun addGeofence() {
-        val geofence = Geofence.Builder()
-            .setRequestId(getUniqueId().toString())
-            .setCircularRegion(latitude!!,
-                longitude!!,
-                GeofencingConstants.GEOFENCE_RADIUS_IN_METERS
-            )
-            .setExpirationDuration(GeofencingConstants.GEOFENCE_EXPIRATION)
-            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-            .build()
-
-        val geofencingRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            .addGeofence(geofence)
-            .build()
-        geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
-            addOnSuccessListener {
-                Toast.makeText(applicationContext,"Geofence Added ! " + geofence.latitude +"   "+ geofence.longitude, Toast.LENGTH_LONG).show()
             }
-            addOnFailureListener {
-                Toast.makeText(applicationContext, "Failed", Toast.LENGTH_LONG).show()
+            else{
+                Snackbar.make(
+                    findViewById(R.id.map),
+                    R.string.canno_add_geofence,
+                    Snackbar.LENGTH_SHORT
+                )
             }
         }
+        viewModel.bumps.observe(this, Observer {
+            for (bump in it){
+                geofencesUtilFunctions.addGeofence(bump.latitude, bump.longitude)
+            }
+        })
+        refreshBumpList()
     }
+    private fun refreshBumpList() {
+        databaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val bumpList = arrayListOf<BumpData>()
+                if (snapshot.exists()){
+                    GeofencesUtilFunctions(applicationContext, this@MapsActivity).removeGeofences()
+                    for (snap in snapshot.children){
+                        val bump = snap.getValue(BumpData::class.java)
+                        bumpList.add(bump!!)
+                        GeofencesUtilFunctions(applicationContext, this@MapsActivity)
+                            .addGeofence(bump.latitude!!, bump.longitude!!)
+                    }
+                }
+            }
 
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -108,9 +130,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         requestForegroundAndBackgroundLocationPermissions()
+
     }
 
 
@@ -184,6 +208,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 }.show()
         } else {
             checkDeviceLocationSettings()
+            mMap.setMyLocationEnabled(true)
+            getLocation()
+            locationUpdates()
         }
     }
     @SuppressLint("MissingPermission")
@@ -239,6 +266,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                     val zoom = 18f
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
                 }
+                else{
+                    Toast.makeText(applicationContext, "Location result is null", Toast.LENGTH_LONG).show()
+                }
             }
         }
         LocationServices.getFusedLocationProviderClient(applicationContext)
@@ -261,6 +291,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         Log.d(TAG, "Location" + latitude.toString() + longitude.toString())
     }
 
+    override fun onProviderEnabled(provider: String) {
+    }
+
+    override fun onProviderDisabled(provider: String) {
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+    }
+
     companion object{
         fun newIntent(context: Context): Intent{
             val intent =Intent(context, MapsActivity::class.java)
@@ -271,7 +310,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     override fun onMapsSdkInitialized(p0: MapsInitializer.Renderer) {
 
     }
-}
+
+
+    }
+
+
 private val REQUEST_LOCATION_PERMISSION = 1
 private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34

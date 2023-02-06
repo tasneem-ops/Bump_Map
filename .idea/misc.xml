@@ -3,7 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/layout/activity_main.xml" value="0.15364583333333334" />
         <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/layout/activity_maps.xml" value="0.1" />
+        <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/layout/bluetooth_device_item.xml" value="0.176" />
+        <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/layout/fragment_bluetooth.xml" value="0.176" />
+        <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/layout/fragment_settings.xml" value="0.15364583333333334" />
+        <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/layout/fragment_welcome.xml" value="0.19739583333333333" />
+        <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/layout/switch_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/AndroidProjects/MapsDemo/app/src/main/res/menu/menu.xml" value="0.264" />
       </map>
     </option>
   </component>

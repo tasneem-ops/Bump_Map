@@ -6,10 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mapsdemo.data.model.Bump
+import com.example.mapsdemo.data.model.NotificationStatus
 
-@Database(entities = [Bump::class], version = 6 )
+@Database(entities = [Bump::class, NotificationStatus::class], version = 1 )
 abstract class BumpDatabase : RoomDatabase() {
     abstract val bumpDao : BumpDao
+    abstract val notificationStatusDao : NotificationStatusDao
 
     companion object {
         @Volatile
