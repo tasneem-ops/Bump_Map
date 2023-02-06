@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mapsdemo.data.local.BumpDatabase
 import com.example.mapsdemo.data.model.Bump
+import com.example.mapsdemo.data.model.BumpData
 import com.example.mapsdemo.data.repository.LocalRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -17,13 +18,8 @@ class MainViewModel(application: Application)
     val database = BumpDatabase.getInstance(application)
     val repository = LocalRepository(database)
 
-    private val _bumps = MutableLiveData<List<Bump>>()
-    val bumps : LiveData<List<Bump>>
-    get() = _bumps
 
-    private val _isUnique = MutableLiveData<Boolean>()
-    val isUnique : LiveData<Boolean>
-    get() = _isUnique
+    val bumps : MutableList<BumpData> = arrayListOf<BumpData>()
 
     fun saveBump(bump: Bump){
         if(validateBumpData(bump)){
@@ -40,37 +36,20 @@ class MainViewModel(application: Application)
         return false
     }
 
-
-    fun getAllbumps(){
-        viewModelScope.launch {
-           _bumps.value = repository.getAllBumps()
-        }
-    }
-
-    fun validateUniqueBump(newBump: Bump) {
-        var allBumps : List<Bump>
-        runBlocking{
-            allBumps = repository.getAllBumps()
-            if(allBumps !=null){
-                var x = 0
-                for (bump in allBumps){
-                    if (calcDistance(newBump.latitude, bump.latitude, newBump.longitude, bump.longitude)<20){
+    fun validateUniqueBump(newBump: Bump) : Boolean{
+            if(bumps !=null){
+                for (bump in bumps){
+                    if (calcDistance(newBump.latitude, bump.latitude!!, newBump.longitude,
+                            bump.longitude!!)<20){
                         Log.d("Geofence", "Bump is not unique, NOT ADDED!")
-                        _isUnique.value = false
-                        x = 1
-                        break
+                        return false
                     }
                 }
-                if (x == 0){
-                    _isUnique.value = true
-                }
+                return true
             }
             else{
-                _isUnique.value = true
+                return true
             }
-
-        }
-
     }
 
     fun calcDistance(lat1 :Double, lat2 :Double, lng1: Double, lng2: Double) : Double{

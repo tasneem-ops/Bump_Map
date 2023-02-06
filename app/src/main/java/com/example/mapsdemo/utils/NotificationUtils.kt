@@ -33,13 +33,13 @@ fun sendRealNotification(context: Context) {
         notificationManager.createNotificationChannel(channel)
     }
 
-    val intent = MapsActivity.newIntent(context.applicationContext)
-    //create a pending intent that opens ReminderDescriptionActivity when the user clicks on the notification
-    val stackBuilder = TaskStackBuilder.create(context)
-        .addParentStack(MapsActivity::class.java)
-        .addNextIntent(intent)
-    val notificationPendingIntent = stackBuilder
-        .getPendingIntent(getUniqueId(), PendingIntent.FLAG_UPDATE_CURRENT)
+//    val intent = MapsActivity.newIntent(context.applicationContext)
+//    //create a pending intent that opens MapsActivity when the user clicks on the notification
+//    val stackBuilder = TaskStackBuilder.create(context)
+//        .addParentStack(MapsActivity::class.java)
+//        .addNextIntent(intent)
+//    val notificationPendingIntent = stackBuilder
+//        .getPendingIntent(getUniqueId(), PendingIntent.FLAG_UPDATE_CURRENT)
 
 //    build the notification object with the data to be shown
     val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
@@ -47,7 +47,6 @@ fun sendRealNotification(context: Context) {
         .setContentTitle("Bump!!")
         .setPriority(Notification.PRIORITY_MAX)
         .setContentText("There is a bump near you. Be careful !")
-        .setContentIntent(notificationPendingIntent)
         .setAutoCancel(true)
         .build()
 

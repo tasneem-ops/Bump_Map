@@ -31,7 +31,6 @@ class BluetoothChatService() {
     private var connectThread : ConnectThread? = null
     private var acceptThread : AcceptThread? = null
     private var connectedThread : ConnectedThread? = null
-
     private lateinit var mProgressDialog: ProgressDialog
     public constructor(context: Context, bluetoothAdapter: BluetoothAdapter, handler: Handler) : this() {
         mContext = context

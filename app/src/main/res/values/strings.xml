@@ -16,5 +16,5 @@
     <string name="welcome_text_title">Welcome To Bumps Map Application</string>
     <string name="welcome_text">In this app: \nYou can save bumps location. \nYou can share that data with other users.
         \nYou can connect to your car\'s embedded system using bluetooth to make use of this data in adaptive cruise control system</string>
-    <string name="connect">Connect</string>
+    <string name="connect">Connect and Go to Map</string>
 </resources>

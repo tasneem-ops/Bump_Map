@@ -3,6 +3,7 @@ package com.example.mapsdemo.map_screen
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -13,7 +14,9 @@ import android.location.LocationManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
+import android.os.Message
 import android.provider.Settings
 import android.util.Log
 import android.view.Menu
@@ -25,6 +28,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mapsdemo.BuildConfig
 import com.example.mapsdemo.MainViewModel
 import com.example.mapsdemo.R
+import com.example.mapsdemo.bluetooth.BluetoothChatService
+import com.example.mapsdemo.bluetooth.BluetoothFragment
+import com.example.mapsdemo.bluetooth.BluetoothFragment.Companion.m_myUUID
 import com.example.mapsdemo.data.model.Bump
 import com.example.mapsdemo.data.model.BumpData
 import com.google.android.gms.maps.model.LatLng
@@ -51,7 +57,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     private lateinit var locationManager: LocationManager
     private lateinit var geofencesUtilFunctions : GeofencesUtilFunctions
     private lateinit var databaseReference: DatabaseReference
-
+    val handler = object : Handler(){
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            Toast.makeText(applicationContext, msg?.data?.getString("msg"), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(applicationContext, msg.data.getString("error"), Toast.LENGTH_SHORT).show()
+            if (msg.data.getString("msg") != null){
+                addBump()
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, this);
@@ -64,53 +79,69 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         val viewModelFactory = ViewModelFactory(application )
         viewModel = ViewModelProvider(this , viewModelFactory).get(MainViewModel::class.java)
         geofencesUtilFunctions = GeofencesUtilFunctions(applicationContext, this)
-
         databaseReference = FirebaseDatabase.getInstance().getReference("Bumps")
-
-        binding.addBump.setOnClickListener {
-            if(foregroundAndBackgroundLocationPermissionApproved() && (latitude!= null) && (longitude!=null)){
-                val id = databaseReference.push().key!!
-                viewModel.saveBump(Bump(
-                    latitude!!, longitude!!,
-                    GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id
-                ))
-                databaseReference.child(id!!).setValue(Bump(latitude!!, longitude!!,
-                    GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id))
-                    .addOnSuccessListener {
-                        Toast.makeText(applicationContext, "Book is Successfully Uploaded!", Toast.LENGTH_LONG).show()
-                    }
-                    .addOnFailureListener { err ->
-                        Toast.makeText(applicationContext, "Error: ${err.message}", Toast.LENGTH_LONG).show()
-                    }
-                geofencesUtilFunctions.addGeofence(latitude!!, longitude!!)
-
-            }
-            else{
-                Snackbar.make(
-                    findViewById(R.id.map),
-                    R.string.canno_add_geofence,
-                    Snackbar.LENGTH_SHORT
-                )
-            }
+        if (BluetoothFragment.m_bluetoothAdapter != null){
+            val bluetoothChatService = BluetoothChatService(applicationContext, BluetoothFragment.m_bluetoothAdapter!!, handler)
+            m_bluetoothChatService = bluetoothChatService
         }
-        viewModel.bumps.observe(this, Observer {
-            for (bump in it){
-                geofencesUtilFunctions.addGeofence(bump.latitude, bump.longitude)
-            }
-        })
+        val bluetoothDevice : BluetoothDevice? = intent.getParcelableExtra(EXTRA_BluetoothDevice)
+        if (bluetoothDevice!= null){
+            m_bluetoothChatService?.startClient(bluetoothDevice, m_myUUID)
+        }
+        binding.addBump.setOnClickListener {
+            addBump()
+        }
+
         refreshBumpList()
     }
+
+    private fun addBump() {
+        if(foregroundAndBackgroundLocationPermissionApproved() && (latitude!= null) && (longitude!=null)){
+
+            val id = databaseReference.push().key!!
+            val bump = Bump(latitude!!, longitude!!,
+                GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id)
+            if (viewModel.validateBumpData(bump) && viewModel.validateUniqueBump(bump)) {
+                databaseReference.child(id!!).setValue(bump)
+                    .addOnSuccessListener {
+                        Toast.makeText(
+                            applicationContext,
+                            "Bump is Successfully Uploaded!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    .addOnFailureListener { err ->
+                        Toast.makeText(
+                            applicationContext,
+                            "Error: ${err.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                geofencesUtilFunctions.addGeofence(latitude!!, longitude!!)
+            }
+        }
+        else{
+            Snackbar.make(
+                findViewById(R.id.map),
+                R.string.canno_add_geofence,
+                Snackbar.LENGTH_SHORT
+            )
+        }
+    }
+
     private fun refreshBumpList() {
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val bumpList = arrayListOf<BumpData>()
                 if (snapshot.exists()){
                     GeofencesUtilFunctions(applicationContext, this@MapsActivity).removeGeofences()
+                    viewModel.bumps.clear()
                     for (snap in snapshot.children){
                         val bump = snap.getValue(BumpData::class.java)
                         bumpList.add(bump!!)
                         GeofencesUtilFunctions(applicationContext, this@MapsActivity)
                             .addGeofence(bump.latitude!!, bump.longitude!!)
+                        viewModel.bumps.add(bump)
                     }
                 }
             }
@@ -301,8 +332,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     }
 
     companion object{
-        fun newIntent(context: Context): Intent{
+        private const val EXTRA_BluetoothDevice = "EXTRA_BluetoothDevice"
+        var m_bluetoothChatService : BluetoothChatService? = null
+        fun newIntent(context: Context, bluetoothDevice: BluetoothDevice?): Intent{
             val intent =Intent(context, MapsActivity::class.java)
+            intent.putExtra(EXTRA_BluetoothDevice, bluetoothDevice)
             return intent
         }
     }

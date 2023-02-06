@@ -1,13 +1,11 @@
 package com.example.mapsdemo.main_screen
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
-import com.example.mapsdemo.R
 import com.example.mapsdemo.databinding.FragmentWelcomeBinding
 import com.example.mapsdemo.map_screen.MapsActivity
 
@@ -27,12 +25,12 @@ class WelcomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.mapBtn.setOnClickListener {
-            val intent = Intent(requireContext(), MapsActivity::class.java)
+            val intent = MapsActivity.newIntent(requireContext(), null)
             startActivity(intent)
         }
 
         binding.settingsBtn.setOnClickListener {
-            it.findNavController().navigate(WelcomeFragmentDirections.actionWelcomeFragmentToSettingsFragment())
+//            it.findNavController().navigate(WelcomeFragmentDirections.actionWelcomeFragmentToSettingsFragment())
         }
         binding.bluetoothBtn.setOnClickListener {
             it.findNavController().navigate(WelcomeFragmentDirections.actionWelcomeFragmentToBluetoothFragment())
