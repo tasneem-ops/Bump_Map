@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Road Conditions Map</string>
-    <string name="title_activity_maps">Road Conditions Map</string>
+    <string name="app_name">BumpMap</string>
+    <string name="title_activity_maps">Bump Map</string>
     <string name="permission_denied_explanation">
         You need to grant location permission in order to use this app.
     </string>
@@ -13,8 +13,17 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="connect_to_bluetooth_devices">Connect to Bluetooth devices</string>
     <string name="go_to_map_screen">Go to Map Screen</string>
-    <string name="welcome_text_title">Welcome To Bumps Map Application</string>
+    <string name="welcome_text_title">Welcome To Bump Map Application</string>
     <string name="welcome_text">In this app: \nYou can save bumps location. \nYou can share that data with other users.
+        \nYou can connect to your car\'s embedded system using bluetooth to make use of this data in adaptive cruise control system
+    In this app: \nYou can save bumps location. \nYou can share that data with other users.
         \nYou can connect to your car\'s embedded system using bluetooth to make use of this data in adaptive cruise control system</string>
-    <string name="connect">Connect and Go to Map</string>
+    <string name="connect">Connect and Go to Map </string>
+    <string name="show_bump_marks">Show Bump Marks</string>
+    <string name="remove_bump_marks">Remove Bump Marks</string>
+    <string name="first_screen">The app saves bumps locations and send you notification when you are close to a bump</string>
+    <string name="second_screen_title">Cloud Realtime Database</string>
+    <string name="second_screen">All Bumps locations are stored in cloud database.\nAll users are sharing data together</string>
+    <string name="third_screen_title">Part of a bigger project!</string>
+    <string name="third_screen">This app is developed as a part of graduation project: Advanced Driver Assistant System (ADAS)\n\nSupervisor: Dr.Mostafa Salah\nDeveloper: Tasneem Ibraheem</string>
 </resources>

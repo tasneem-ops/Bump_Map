@@ -18,9 +18,9 @@ class GeofencesUtilFunctions(applicationContext: Context, activity: Activity) {
     }
     private  var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(activity)
     @SuppressLint("MissingPermission")
-    fun addGeofence(lat :Double, lng: Double) {
+    fun addGeofence(lat :Double, lng: Double, radius : Double, id : String) {
         val geofence = Geofence.Builder()
-            .setRequestId(getUniqueId().toString())
+            .setRequestId(id)
             .setCircularRegion(lat,
                 lng,
                 GeofencingConstants.GEOFENCE_RADIUS_IN_METERS

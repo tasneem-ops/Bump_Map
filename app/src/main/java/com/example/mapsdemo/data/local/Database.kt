@@ -5,13 +5,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.mapsdemo.data.model.Bump
-import com.example.mapsdemo.data.model.NotificationStatus
+import com.example.mapsdemo.data.model.*
 
-@Database(entities = [Bump::class, NotificationStatus::class], version = 1 )
+@Database(entities = [Bump::class,NotSavedBumps::class, SpeedCamera::class, NotSavedSpeedCamera::class], version = 2 )
 abstract class BumpDatabase : RoomDatabase() {
     abstract val bumpDao : BumpDao
-    abstract val notificationStatusDao : NotificationStatusDao
+    abstract val notSavedBumpsDao : NotSavedBumpsDao
+    abstract val speedCameraDao : SpeedCameraDao
 
     companion object {
         @Volatile

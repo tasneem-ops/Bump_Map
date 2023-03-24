@@ -7,82 +7,97 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".main_screen.WelcomeFragment">
 
 
-        <Button
-            android:id="@+id/map_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@string/go_to_map_screen"
-            app:layout_constraintEnd_toEndOf="@+id/bluetooth_btn"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/bluetooth_btn"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+<!--        <Button-->
+<!--            android:id="@+id/map_btn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="16dp"-->
+<!--            android:text="@string/go_to_map_screen"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/bluetooth_btn"-->
+<!--            app:layout_constraintHorizontal_bias="0.0"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/bluetooth_btn"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/scrollView2" />-->
 
-        <Button
-            android:id="@+id/bluetooth_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@string/connect_to_bluetooth_devices"
-            app:layout_constraintBottom_toTopOf="@+id/settings_btn"
-            app:layout_constraintTop_toBottomOf="@+id/map_btn"
-            tools:layout_editor_absoluteX="16dp" />
+<!--        <Button-->
+<!--            android:id="@+id/bluetooth_btn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="16dp"-->
+<!--            android:text="@string/connect_to_bluetooth_devices"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/settings_btn"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/map_btn"-->
+<!--            tools:layout_editor_absoluteX="16dp" />-->
 
-        <Button
-            android:id="@+id/settings_btn"
+<!--        <Button-->
+<!--            android:id="@+id/settings_btn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="16dp"-->
+<!--            android:text="@string/settings"-->
+<!--            android:visibility="gone"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/bluetooth_btn"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/bluetooth_btn" />-->
+
+<!--        <ScrollView-->
+<!--            android:id="@+id/scrollView2"-->
+<!--            android:layout_width="409dp"-->
+<!--            android:layout_height="400dp"-->
+<!--            android:layout_margin="16dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:orientation="vertical">-->
+<!--                <TextView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="16dp"-->
+<!--                    android:text="@string/welcome_text_title"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textSize="32sp"-->
+<!--                    android:fontFamily="serif-monospace"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textStyle="bold"/>-->
+<!--                <TextView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:textAlignment="textStart"-->
+<!--                    android:layout_margin="16dp"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:paddingStart="16dp"-->
+<!--                    android:paddingEnd="8dp"-->
+<!--                    android:text="@string/welcome_text"-->
+<!--                    android:fontFamily="serif-monospace"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold"/>-->
+<!--            </LinearLayout>-->
+
+<!--        </ScrollView>-->
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@string/settings"
-            android:visibility="gone"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:menu="@menu/navigation_menu"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/bottonnav"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/bluetooth_btn"
-            app:layout_constraintStart_toStartOf="@+id/bluetooth_btn" />
-
-        <ScrollView
-            android:id="@+id/scrollView2"
-            android:layout_width="409dp"
-            android:layout_height="400dp"
-            android:layout_margin="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:text="@string/welcome_text_title"
-                    android:textAlignment="center"
-                    android:textSize="32sp"
-                    android:fontFamily="serif-monospace"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="textStart"
-                    android:layout_margin="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/welcome_text"
-                    android:fontFamily="serif-monospace"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-
-        </ScrollView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintEnd_toEndOf="parent" />
+    </RelativeLayout>
 </layout>

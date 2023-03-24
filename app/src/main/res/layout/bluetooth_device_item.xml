@@ -22,7 +22,7 @@
             android:id="@+id/book_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:src="@drawable/mobile"
+            android:src="@drawable/bluetooth_pic"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"

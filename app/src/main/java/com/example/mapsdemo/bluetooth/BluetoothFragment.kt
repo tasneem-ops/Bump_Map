@@ -13,9 +13,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
+import com.example.mapsdemo.R
 import com.example.mapsdemo.data.model.Bluetooth_Device
 import com.example.mapsdemo.databinding.FragmentBluetoothBinding
+import com.example.mapsdemo.main_screen.WelcomeFragmentDirections
 import com.example.mapsdemo.map_screen.MapsActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
 
 class BluetoothFragment : Fragment() {
@@ -41,6 +45,7 @@ class BluetoothFragment : Fragment() {
         binding = FragmentBluetoothBinding.inflate(inflater)
         adapter = BluetoothDeviceListAdapter(BluetoothDeviceListListener { bluetoothDevice ->
             Toast.makeText(context, "You Choose: ${bluetoothDevice.name}", Toast.LENGTH_LONG).show()
+
             m_address = bluetoothDevice.MAC
         })
         binding.devicesRecycler.adapter = adapter
@@ -68,7 +73,33 @@ class BluetoothFragment : Fragment() {
                 }
             }
         }
+
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val bottomNavBar = view?.findViewById<BottomNavigationView>(R.id.bottonnav)
+        bottomNavBar?.selectedItemId = R.id.bluetooth
+        bottomNavBar?.setOnItemSelectedListener {
+            when(it.itemId){
+                R.id.home ->{
+                    findNavController().navigate(BluetoothFragmentDirections.actionBluetoothFragmentToWelcomeFragment())
+                    true
+                }
+                R.id.bluetooth ->{
+                    true
+                }
+                R.id.map_item ->{
+                    val intent = MapsActivity.newIntent(requireContext(), null)
+                    startActivity(intent)
+                    true
+                }
+                else->{
+                    true
+                }
+            }
+        }
     }
 
     private fun findDeviceByAddress(mAddress: String, _pairedDevices: Set<BluetoothDevice>?): BluetoothDevice? {

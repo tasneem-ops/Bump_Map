@@ -2,11 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/turn_off"
-        android:title="Turn off notifications"
+        android:id="@+id/show_bump_marks"
+        android:title="@string/show_bump_marks"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/turn_on"
-        android:title="Turn on notifications"
+        android:id="@+id/remove_bump_marks"
+        android:title="@string/remove_bump_marks"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/update_database"
+        android:title="Update Offline Database"
         app:showAsAction="never"/>
 </menu>

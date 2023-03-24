@@ -25,5 +25,9 @@
         android:id="@+id/bluetoothFragment"
         android:name="com.example.mapsdemo.bluetooth.BluetoothFragment"
         android:label="fragment_bluetooth"
-        tools:layout="@layout/fragment_bluetooth" />
+        tools:layout="@layout/fragment_bluetooth" >
+        <action
+            android:id="@+id/action_bluetoothFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
+    </fragment>
 </navigation>

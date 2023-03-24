@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mapsdemo.R
 import com.example.mapsdemo.data.model.Bluetooth_Device
 import com.example.mapsdemo.databinding.BluetoothDeviceItemBinding
 
@@ -25,6 +26,7 @@ class BluetoothDeviceListAdapter(val clickListener : BluetoothDeviceListListener
             binding.clickListener = clickListener
             binding.executePendingBindings()
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BluetoothDeviceViewHolder {
