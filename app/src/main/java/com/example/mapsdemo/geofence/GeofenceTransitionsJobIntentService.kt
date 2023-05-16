@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.JobIntentService
+import com.example.mapsdemo.R
 import com.example.mapsdemo.bluetooth.BluetoothService
 import com.example.mapsdemo.map_screen.MapsActivity
 import com.example.mapsdemo.data.local.BumpDao
@@ -44,6 +45,9 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     @SuppressLint("LongLogTag")
     override fun onHandleWork(intent: Intent) {
+        val sharedPreferences = this.getSharedPreferences(getString(R.string.app_name),
+        Context.MODE_PRIVATE)
+        val distance = sharedPreferences.getInt(getString(R.string.shared_pref_distance_key), Context.MODE_PRIVATE)
         if (intent != null){
             val geofencingEvent = GeofencingEvent.fromIntent(intent)
             if (geofencingEvent != null) {
@@ -73,13 +77,15 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                 catch (e: Exception){
                     Log.d("GeofenceTransitionsJobIntentService", e.message.toString())
                 }
-                sendNotification(triggeringGeofences)
+                sendNotification(triggeringGeofences, distance)
             }
         }
     }
 
-    fun sendNotification(triggeringGeofences: List<Geofence>) {
+    fun sendNotification(triggeringGeofences: List<Geofence>, distance : Int) {
         for (triggeringGeofence in triggeringGeofences){
+            val latitude = triggeringGeofence.latitude
+            val longitude = triggeringGeofence.longitude
             try {
                 val requestId = triggeringGeofence.requestId
                 CoroutineScope(coroutineContext).launch(SupervisorJob()){
@@ -90,11 +96,9 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                     else{
                         sendBumpNotification(
                             this@GeofenceTransitionsJobIntentService
+                        , latitude, longitude
                         )
-                        sendCommand("n")
-                        Timer().schedule(1){
-                            sendData()
-                        }
+                        sendCommand("n${distance}\n")
                     }
                 }
             }
@@ -102,17 +106,14 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                 Log.d("GeofenceTransitionsJobIntentService", e.message.toString())
                 sendBumpNotification(
                     this@GeofenceTransitionsJobIntentService
+                    , latitude, longitude
                 )
-                sendCommand("n")
-                Timer().schedule(1){
-                    sendData()
-                }
+                sendCommand("n${distance}\n")
             }
-
             }
         }
     private fun sendData(){
-        sendCommand("Bump: 40\n")
+        sendCommand("Bump: ${GeofencingConstants.GEOFENCE_RADIUS_IN_METERS}\n")
         sendCommand("#")
     }
     private fun sendCommand(char : String) {

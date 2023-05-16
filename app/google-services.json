@@ -1,10 +1,48 @@
 {
   "project_info": {
     "project_number": "565461544060",
+    "firebase_url": "https://road-conditions-map-default-rtdb.firebaseio.com",
     "project_id": "road-conditions-map",
     "storage_bucket": "road-conditions-map.appspot.com"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565461544060:android:e29085c6876455b199adf9",
+        "android_client_info": {
+          "package_name": "com.example.adas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "565461544060-ur6423jvhigs0gf41fln2qthfro8ea2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.adas",
+            "certificate_hash": "cedbd4ad69edd1558f69864023cdbae095d2b6c0"
+          }
+        },
+        {
+          "client_id": "565461544060-4vpspv4des1tq9c2cjovf7tqt0ttqb5l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLQWgKvxzc6ziA8RVGKpFzrXxDeRcJFX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "565461544060-4vpspv4des1tq9c2cjovf7tqt0ttqb5l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:565461544060:android:fa38fb51c5d7089899adf9",

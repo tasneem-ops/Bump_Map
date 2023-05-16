@@ -18,9 +18,16 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.mapsdemo.main_screen.SettingsFragment"
+        android:name="com.example.mapsdemo.settings.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_bluetoothFragment"
+            app:destination="@id/bluetoothFragment" />
+    </fragment>
     <fragment
         android:id="@+id/bluetoothFragment"
         android:name="com.example.mapsdemo.bluetooth.BluetoothFragment"
@@ -29,5 +36,8 @@
         <action
             android:id="@+id/action_bluetoothFragment_to_welcomeFragment"
             app:destination="@id/welcomeFragment" />
+        <action
+            android:id="@+id/action_bluetoothFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
 </navigation>

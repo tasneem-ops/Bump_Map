@@ -47,7 +47,7 @@ class LocalRepository(val database: BumpDatabase,
                     if (snapshot.exists()){
                         for (snap in snapshot.children){
                             val bumpData = snap.getValue(BumpData::class.java)
-                            val bump = Bump(bumpData?.latitude!!, bumpData?.longitude!!, bumpData?.radius!!, bumpData?.id!!)
+                            val bump = Bump(bumpData?.latitude!!, bumpData?.longitude!!, bumpData?.radius!!, bumpData?.id!!, bumpData.upVotes!!, bumpData.downVotes!!)
                             bumpList.add(bump)
                         }
                     }

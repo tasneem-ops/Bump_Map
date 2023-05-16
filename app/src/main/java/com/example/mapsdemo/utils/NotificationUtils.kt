@@ -3,8 +3,10 @@ package com.example.mapsdemo.utils
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.net.Uri
@@ -12,11 +14,14 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.example.mapsdemo.BuildConfig
 import com.example.mapsdemo.R
+import com.example.mapsdemo.broadcastReceiver.DownVoteReceiver
+import com.example.mapsdemo.broadcastReceiver.UpVoteReceiver
+import com.example.mapsdemo.data.model.BumpData
 
 private const val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel"
 private const val NOTIFICATION_CHANNEL_ID_1 = BuildConfig.APPLICATION_ID +".channel_1"
 
-fun sendBumpNotification(context: Context) {
+fun sendBumpNotification(context: Context, latitude : Double, longitude: Double) {
     val notificationManager = context
         .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val notificationSound = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.raw.bump}")
@@ -38,6 +43,7 @@ fun sendBumpNotification(context: Context) {
 
         notificationManager.createNotificationChannel(channel)
     }
+    notificationManager.cancelAll()
 
 
 //    val intent = MapsActivity.newIntent(context.applicationContext)
@@ -53,6 +59,16 @@ fun sendBumpNotification(context: Context) {
     vibrate[2] = 200L
     vibrate[3] = 300L
 
+    val upVoteIntent = Intent(context, UpVoteReceiver::class.java)
+    upVoteIntent.putExtra("latitude", latitude)
+    upVoteIntent.putExtra("longitude", longitude)
+    val pendingUpIntent = PendingIntent.getBroadcast(context, 2, upVoteIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+
+    val downVoteIntent = Intent(context, DownVoteReceiver::class.java)
+    downVoteIntent.putExtra("latitude", latitude)
+    downVoteIntent.putExtra("longitude", longitude)
+    val pendingDownIntent = PendingIntent.getBroadcast(context, 3, downVoteIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+
 //    build the notification object with the data to be shown
     val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         .setSmallIcon(R.mipmap.ic_launcher)
@@ -62,6 +78,8 @@ fun sendBumpNotification(context: Context) {
         .setAutoCancel(true)
         .setSound(notificationSound)
         .setVibrate(vibrate)
+        .addAction( R.mipmap.ic_launcher,"Yes It's a Bump", pendingUpIntent)
+        .addAction(R.mipmap.ic_launcher, "No there's No Bump", pendingDownIntent)
         .build()
 
     notificationManager.notify(getUniqueId(), notification)

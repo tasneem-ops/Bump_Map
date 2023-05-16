@@ -7,7 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mapsdemo.data.model.*
 
-@Database(entities = [Bump::class,NotSavedBumps::class, SpeedCamera::class, NotSavedSpeedCamera::class], version = 2 )
+@Database(entities = [Bump::class,NotSavedBumps::class, SpeedCamera::class, NotSavedSpeedCamera::class], version = 3 )
 abstract class BumpDatabase : RoomDatabase() {
     abstract val bumpDao : BumpDao
     abstract val notSavedBumpsDao : NotSavedBumpsDao

@@ -26,4 +26,12 @@
     <string name="second_screen">All Bumps locations are stored in cloud database.\nAll users are sharing data together</string>
     <string name="third_screen_title">Part of a bigger project!</string>
     <string name="third_screen">This app is developed as a part of graduation project: Advanced Driver Assistant System (ADAS)\n\nSupervisor: Dr.Mostafa Salah\nDeveloper: Tasneem Ibraheem</string>
+
+    <string name="shared_pref_distance_key">Bump Distance</string>
+
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="register_now"><u>New Member? Register</u></string>
+    <string name="login_now"><u>Already Have An Account? Login</u></string>
+    <string name="logout">Logout</string>
 </resources>

@@ -5,4 +5,6 @@ import androidx.room.PrimaryKey
 data class BumpData(var latitude : Double? = null,
                     var longitude : Double? = null,
                     var radius : Double? =null,
-                    var id : String? = null)
+                    var id : String? = null,
+                    var upVotes : Int? = null,
+                    var downVotes :Int? = null )

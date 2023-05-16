@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
@@ -38,10 +39,7 @@ import com.example.mapsdemo.R
 import com.example.mapsdemo.bluetooth.BluetoothChatService
 import com.example.mapsdemo.bluetooth.BluetoothFragment
 import com.example.mapsdemo.bluetooth.BluetoothFragment.Companion.m_myUUID
-import com.example.mapsdemo.data.model.Bump
-import com.example.mapsdemo.data.model.BumpData
-import com.example.mapsdemo.data.model.SpeedCamera
-import com.example.mapsdemo.data.model.SpeedCameraData
+import com.example.mapsdemo.data.model.*
 import com.example.mapsdemo.databinding.ActivityMapsBinding
 import com.example.mapsdemo.geofence.GeofencesUtilFunctions
 import com.example.mapsdemo.geofence.GeofencingConstants
@@ -54,10 +52,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
+import kotlin.math.sqrt
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
@@ -79,11 +81,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     var speedCameras = arrayListOf<SpeedCamera>()
     private lateinit var sensorManager : SensorManager
     private lateinit var accelerometerSensor : Sensor
+    val listener = object: SensorEventListener {
+        var bumpDetected : Boolean = false
+        val THRESHOLD = 30
+        val BUMP_DURATION_MILLISECONDS = 5000L
+        override fun onSensorChanged(event: SensorEvent?) {
+            // Handle accelerometer sensor data here
+            if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
+                val x = event.values[0]
+                val y = event.values[1]
+                val z = event.values[2]
+                val acceleration = sqrt(x*x + y*y + z*z)
 
-//    val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-//    val accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-    val listener = AccelerometerListener()
-    val handler = object : Handler(){
+                if (acceleration > THRESHOLD && !bumpDetected) {
+                    bumpDetected = true
+                    Timer().schedule(BUMP_DURATION_MILLISECONDS){
+                        bumpDetected = false
+                    }
+                    onBumpDetected()
+                }
+            }
+        }
+
+        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+
+        }
+    }
+        val handler = object : Handler(){
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             Toast.makeText(applicationContext, msg?.data?.getString("msg"), Toast.LENGTH_SHORT).show()
@@ -109,6 +133,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         geofencesUtilFunctions = GeofencesUtilFunctions(applicationContext, this)
         bumpsDatabaseReference = FirebaseDatabase.getInstance().getReference("Bumps")
         speedCameraDatabaseReference = FirebaseDatabase.getInstance().getReference("SpeedCamera")
+        sensorManager.registerListener(listener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
         if (BluetoothFragment.m_bluetoothAdapter != null){
             val bluetoothChatService = BluetoothChatService(applicationContext, BluetoothFragment.m_bluetoothAdapter!!, handler)
             m_bluetoothChatService = bluetoothChatService
@@ -120,9 +145,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         binding.addBump.setOnClickListener {
             addBump()
         }
-        binding.addSpeedCamera.setOnClickListener {
-            addSpeedCamera()
-        }
+//        binding.addSpeedCamera.setOnClickListener {
+//            addSpeedCamera()
+//        }
         refreshData()
 
 //        refreshBumpList()
@@ -211,6 +236,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 }
                 true
             }
+            R.id.stop_location_tracking ->{
+
+                true
+            }
             else ->
                 super.onOptionsItemSelected(item)
         }
@@ -224,22 +253,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 ?.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.bump_notice))
         }
         mMap.setOnMarkerClickListener(GoogleMap.OnMarkerClickListener { marker ->
-            val snackbar = Snackbar.make(findViewById(R.id.map), "Do You Want to Delete This Bump?", Snackbar.LENGTH_LONG)
-                .setAction("Delete") {
+            val snackbar = Snackbar.make(findViewById(R.id.map), "Is there a bump here?", Snackbar.LENGTH_LONG)
+                .setAction("No") {
                     // Responds to click on the action
                     val position = marker.position
                     bumps.forEach { bump ->
                         if (bump.latitude == position.latitude && bump.longitude == position.longitude){
                             val id = bump.id
-                            bumpsDatabaseReference.child(id).removeValue()
-                            marker.remove()
-                            Toast.makeText(applicationContext, "Bump is removed", Toast.LENGTH_LONG).show()
+                            var downVotes = bump.DownVotes
+                            var upVotes = bump.UpVotes
+                            downVotes ++
+                            Toast.makeText(this, "Data Updated : $downVotes and olad data ${bump.DownVotes}", Toast.LENGTH_SHORT).show()
+                            if (downVotes - upVotes >= 5){
+                                bumpsDatabaseReference.child(id).setValue(null)
+                                marker.remove()
+                                Toast.makeText(applicationContext, "Bump is removed", Toast.LENGTH_LONG).show()
+                            }
+                            val updatedBumpData = bump
+                            updatedBumpData.DownVotes = downVotes
+                            bumpsDatabaseReference.child(id).setValue(updatedBumpData)
+                            Toast.makeText(this, "Data Updated : $downVotes", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
-                .setActionTextColor(R.color.Blue_900)
-                .setTextColor(R.color.Blue_900)
             .show()
+
 
             false
         })
@@ -248,12 +286,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     private fun removeBumpMarks(){
         mMap.clear()
     }
+    fun onBumpDetected(){
+        Toast.makeText(applicationContext, "Bump is Detected ", Toast.LENGTH_LONG).show()
+    }
 
     private fun addBump() {
         if(foregroundAndBackgroundLocationPermissionApproved() && (latitude!= null) && (longitude!=null)){
                 val id = bumpsDatabaseReference.push().key!!
                 val bump = Bump(latitude!!, longitude!!,
-                    GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id)
+                    GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id, 0,0)
                 if (viewModel.validateBumpData(bump) && viewModel.validateUniqueBump(bump, bumps)) {
                     bumpsDatabaseReference.child(id!!).setValue(bump)
                         .addOnSuccessListener {
@@ -299,6 +340,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         if (isConnected()){
             Toast.makeText(applicationContext, "Connected to the Internet", Toast.LENGTH_SHORT).show()
             refreshBumpList()
+//            updateFirebaseDatabase()
             refreshSpeedCameraList()
             Timer().schedule(10000){
                 bumps.forEach {
@@ -355,7 +397,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                         bumpList.add(bump!!)
                         geofencesUtilFunctions
                             .addGeofence(bump.latitude!!, bump.longitude!!, bump.radius!!, bump.id!!)
-                        bumps.add(Bump(bump.latitude!!, bump.longitude!!, bump.radius!!, bump.id!!))
+                        bumps.add(Bump(bump.latitude!!, bump.longitude!!, bump.radius!!, bump.id!!, bump.upVotes!!, bump.downVotes!!))
                     }
                 }
             }
@@ -366,12 +408,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         })
     }
 
-    private fun trackBumpsWithAccelerometer(){
-        sensorManager.registerListener(listener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
+    private fun updateFirebaseDatabase(){
+        bumpsDatabaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val bumpList = arrayListOf<BumpData>()
+                if (snapshot.exists()){
+                    geofencesUtilFunctions.removeGeofences()
+                    for (snap in snapshot.children){
+                        val bump = snap.getValue(OldBump::class.java)
+                        val newBump = BumpData(bump?.latitude, bump?.longitude, bump?.radius, bump?.id, 0,0)
+                        bumpsDatabaseReference.child(bump?.id!!).setValue(newBump)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         sensorManager.unregisterListener(listener)
     }
 

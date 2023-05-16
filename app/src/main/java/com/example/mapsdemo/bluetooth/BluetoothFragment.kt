@@ -95,6 +95,10 @@ class BluetoothFragment : Fragment() {
                     startActivity(intent)
                     true
                 }
+                R.id.settings ->{
+                    findNavController().navigate(BluetoothFragmentDirections.actionBluetoothFragmentToSettingsFragment())
+                    true
+                }
                 else->{
                     true
                 }

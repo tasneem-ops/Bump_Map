@@ -2,19 +2,19 @@
     <!-- Base application theme. -->
     <style name="Theme.MapsDemo" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/Blue_700</item>
-        <item name="colorPrimaryVariant">@color/Blue_700</item>
-        <item name="colorOnPrimary">@color/Blue_900</item>
+        <item name="colorPrimary">#5D1049</item>
+        <item name="colorPrimaryVariant">#4E0D3A</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/Blue_200</item>
-        <item name="colorSecondaryVariant">@color/Blue_400</item>
+        <item name="colorSecondary">#D687B5</item>
+        <item name="colorSecondaryVariant">#CB5899</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
-        <item name="fontFamily">@font/allan</item>
-        <item name="android:backgroundTint">@color/Blue_50</item>
-        <item name="android:textSize">24sp</item>
-        <item name="android:textColor">@color/Blue_900</item>
         <!-- Customize your theme here. -->
+        <item name="fontFamily">@font/aladin</item>
+        <item name="backgroundColor">@color/white</item>
+        <item name="android:textSize">32sp</item>
+        <item name="colorOnBackground">#000000</item>
     </style>
 </resources>

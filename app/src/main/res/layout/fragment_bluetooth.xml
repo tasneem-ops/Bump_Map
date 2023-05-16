@@ -27,6 +27,22 @@
             android:fontFamily="serif-monospace"
             android:textAlignment="center"
             android:textStyle="bold"/>
+        <TextView
+        android:id="@+id/book_list_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This will help connnceting application with embedded system used for Adaptive Cruise Control"
+        app:layout_constraintTop_toTopOf="@id/book_list_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginStart="16dp"
+        android:textSize="27sp"
+        android:fontFamily="serif-monospace"
+        android:textAlignment="center"
+        android:textStyle="italic"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/devices_recycler"
@@ -37,7 +53,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_list_title"
+            app:layout_constraintTop_toBottomOf="@+id/book_list_description"
             app:layout_constraintVertical_bias="0.0" >
 
         </androidx.recyclerview.widget.RecyclerView>

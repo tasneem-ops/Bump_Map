@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".authentication.LoginFragment">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
+
+            <TextView
+                android:id="@+id/login_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/aladin"
+                android:text="@string/login" />
+
+
+            <EditText
+                android:layout_centerHorizontal="true"
+                android:id="@+id/login_email_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:layout_below="@+id/login_label"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                />
+
+            <EditText
+                android:layout_centerHorizontal="true"
+                android:id="@+id/login_password_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:layout_below="@+id/login_email_editText"
+                android:ems="10"
+                android:inputType="textPassword" />
+
+            <Button
+                android:id="@+id/login_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/login_password_editText"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/aladin"
+                android:text="@string/login" />
+            <TextView
+                android:id="@+id/register_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/login_btn"
+                android:text="@string/register_now"
+                android:textSize="24sp"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+</layout>

@@ -7,4 +7,6 @@ import androidx.room.PrimaryKey
 data class NotSavedBumps(var latitude : Double,
                          var longitude : Double,
                          var radius : Double,
-                         @PrimaryKey val id : String)
+                         @PrimaryKey val id : String,
+                         var UpVotes : Int,
+                         var DownVotes : Int)

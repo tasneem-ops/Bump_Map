@@ -61,6 +61,10 @@ class WelcomeFragment : Fragment() {
                     startActivity(intent)
                     true
                 }
+                R.id.settings ->{
+                    view.findNavController().navigate(WelcomeFragmentDirections.actionWelcomeFragmentToSettingsFragment())
+                    true
+                }
                 else->{
                     true
                 }
