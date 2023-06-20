@@ -49,6 +49,7 @@ class SettingsFragment : Fragment() {
                     true
                 }
                 R.id.bluetooth ->{
+                    findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToBluetoothFragment())
                     true
                 }
                 R.id.map_item ->{

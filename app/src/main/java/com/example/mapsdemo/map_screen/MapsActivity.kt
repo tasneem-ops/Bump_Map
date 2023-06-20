@@ -23,6 +23,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.provider.Settings
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -44,6 +45,8 @@ import com.example.mapsdemo.databinding.ActivityMapsBinding
 import com.example.mapsdemo.geofence.GeofencesUtilFunctions
 import com.example.mapsdemo.geofence.GeofencingConstants
 import com.example.mapsdemo.main_screen.MainActivity
+import com.example.mapsdemo.main_screen.WelcomeFragment
+import com.example.mapsdemo.utils.BumpSavedNotification
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
@@ -114,6 +117,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
 //            Toast.makeText(applicationContext, msg.data.getString("error"), Toast.LENGTH_SHORT).show()
             if (msg.data.getString("msg") == "y"){
                 addBump()
+                BumpSavedNotification(applicationContext)
             }
         }
     }
@@ -166,14 +170,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             when(it.itemId){
                 R.id.home ->{
                     val intent = Intent(applicationContext, MainActivity::class.java)
+                    intent.putExtra("Fragment", "home")
                     startActivity(intent)
                     true
                 }
                 R.id.bluetooth ->{
-
+                    val intent = Intent(applicationContext, MainActivity::class.java)
+                    intent.putExtra("Fragment", "bluetooth")
+                    startActivity(intent)
                     true
                 }
                 R.id.map_item ->{
+                    true
+                }
+                R.id.settings ->{
+                    val intent = Intent(applicationContext, MainActivity::class.java)
+                    intent.putExtra("Fragment", "settings")
+                    startActivity(intent)
                     true
                 }
                 else->{
@@ -288,6 +301,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     }
     fun onBumpDetected(){
         Toast.makeText(applicationContext, "Bump is Detected ", Toast.LENGTH_LONG).show()
+        BumpSavedNotification(applicationContext)
     }
 
     private fun addBump() {
@@ -638,6 +652,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             intent.putExtra(EXTRA_BluetoothDevice, bluetoothDevice)
             return intent
         }
+
+
     }
 
     override fun onMapsSdkInitialized(p0: MapsInitializer.Renderer) {

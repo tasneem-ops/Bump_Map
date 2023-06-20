@@ -12,6 +12,8 @@ import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 
 class GeofencesUtilFunctions(applicationContext: Context, activity: Activity) {
+    val applicationContext = applicationContext
+    val activity = activity
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(applicationContext, GeofenceBroadcastReceiver::class.java)
         PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -30,7 +32,7 @@ class GeofencesUtilFunctions(applicationContext: Context, activity: Activity) {
             .build()
 
         val geofencingRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL)
             .addGeofence(geofence)
             .build()
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {

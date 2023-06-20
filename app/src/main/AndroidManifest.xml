@@ -22,10 +22,15 @@
  Needed only if your app communicates with already-paired Bluetooth
          devices.
     -->
+
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.ACCELEROMETER" /> <!-- Needed only if your app uses Bluetooth scan results to derive physical location. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.TTS_ENGINE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -70,8 +75,33 @@
             android:name=".geofence.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+<!--        <service-->
+<!--            android:name=".broadcastReceiver.MyAcessibilityService"-->
+<!--            android:label="@string/app_name"-->
+<!--            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.accessibilityservice.AccessibilityService"/>-->
+<!--            </intent-filter>-->
+
+<!--            <meta-data-->
+<!--                android:name="android.accessibilityservice"-->
+<!--&lt;!&ndash;                android:resource="@xml/acessibility_service"/>&ndash;&gt;-->
+<!--        </service>-->
         <receiver android:name=".broadcastReceiver.UpVoteReceiver"/>
         <receiver android:name=".broadcastReceiver.DownVoteReceiver"/>
+        <receiver android:name=".broadcastReceiver.BootCompletedReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action
+                    android:name="android.intent.action.BOOT_COMPLETED" />
+                <action
+                    android:name="android.intent.action.REBOOT"/>
+
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

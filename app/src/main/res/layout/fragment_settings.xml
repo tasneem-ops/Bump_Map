@@ -13,7 +13,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".settings.SettingsFragment">
+        tools:context=".settings.SettingsFragment"
+        android:id="@+id/settings_fragment_container">
 
         <TextView
             android:id="@+id/settings_label"
@@ -34,7 +35,7 @@
                 android:id="@+id/distance_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/settings_label"
+                android:layout_alignParentTop="true"
                 android:text="Distance of Bump "
                 android:textStyle="bold" />
 

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.mapsdemo.R
@@ -20,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_welcome.view.*
 
 class WelcomeFragment : Fragment() {
     private lateinit var binding: FragmentWelcomeBinding
+    private var fragment: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,7 +33,6 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 //        binding.mapBtn.setOnClickListener {
 //            val intent = MapsActivity.newIntent(requireContext(), null)
 //            startActivity(intent)
@@ -57,6 +58,7 @@ class WelcomeFragment : Fragment() {
                     true
                 }
                 R.id.map_item ->{
+
                     val intent = MapsActivity.newIntent(requireContext(), null)
                     startActivity(intent)
                     true
@@ -71,6 +73,7 @@ class WelcomeFragment : Fragment() {
             }
         }
 
+
         val fragmentList = arrayListOf<Fragment>(
             FirstScreen(), SecondScreen(), ThirdScreen()
         )
@@ -78,5 +81,28 @@ class WelcomeFragment : Fragment() {
         val adapter = ViewPagerAdapter(fragmentList, childFragmentManager, lifecycle)
         view.view_pager.adapter = adapter
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fragment = (activity as MainActivity).getSelectedFragment()
+        when(fragment){
+            "home" -> {
+                true
+            }
+            "bluetooth" ->{
+                (activity as MainActivity).setSelectedFragment("home")
+                view?.findNavController()?.navigate(WelcomeFragmentDirections.actionWelcomeFragmentToBluetoothFragment())
+                true
+            }
+            "settings" ->{
+                (activity as MainActivity).setSelectedFragment("home")
+                view?.findNavController()?.navigate(WelcomeFragmentDirections.actionWelcomeFragmentToSettingsFragment())
+                true
+            }
+            else->{
+                true
+            }
+        }
     }
 }

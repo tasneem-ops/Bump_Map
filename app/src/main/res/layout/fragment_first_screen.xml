@@ -13,7 +13,7 @@
         android:layout_width="300dp"
         android:layout_height="150dp"
         android:layout_marginTop="16dp"
-        android:src="@drawable/bump_1"
+        android:src="@drawable/bumpmap_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -65,6 +65,7 @@
         android:text="Next"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_gravity="right"/>
+        android:layout_gravity="right"
+        android:textColor="@color/black"/>
 
 </LinearLayout>

@@ -10,7 +10,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".main_screen.WelcomeFragment">
+        tools:context=".main_screen.WelcomeFragment"
+        android:id="@+id/welcome_fragment_container">
 
 
 <!--        <Button-->

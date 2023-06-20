@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
         <item name="fontFamily">@font/aladin</item>
         <item name="backgroundColor">@color/white</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="colorOnBackground">#000000</item>
     </style>
 </resources>
