@@ -9,8 +9,8 @@ import kotlin.collections.ArrayList
 data class Bump(
     var latitude : Double,
     var longitude : Double,
-    var radius : Double,
     @PrimaryKey val id : String,
     var UpVotes : Int,
-    var DownVotes : Int
+    var DownVotes : Int,
+    var creator : String
 )

@@ -18,7 +18,7 @@
         \nYou can connect to your car\'s embedded system using bluetooth to make use of this data in adaptive cruise control system
     In this app: \nYou can save bumps location. \nYou can share that data with other users.
         \nYou can connect to your car\'s embedded system using bluetooth to make use of this data in adaptive cruise control system</string>
-    <string name="connect">Connect and Go to Map </string>
+    <string name="connect">Connect</string>
     <string name="show_bump_marks">Show Bump Marks</string>
     <string name="remove_bump_marks">Remove Bump Marks</string>
     <string name="first_screen">The app saves bumps locations and send you notification when you are close to a bump</string>

@@ -12,11 +12,12 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.mapsdemo.data.local.BumpDatabase
 import com.example.mapsdemo.data.model.Bump
+import com.example.mapsdemo.data.model.BumpData
 import com.example.mapsdemo.data.model.SpeedCamera
 import com.example.mapsdemo.data.repository.LocalRepository
 import com.example.mapsdemo.geofence.GeofencesUtilFunctions
 import com.example.mapsdemo.utils.BumpSavedNotification
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
@@ -28,7 +29,6 @@ class RefreshGeofenceWorker(appContext: Context, params: WorkerParameters):
         const val WORK_NAME = "RefreshGeofenceWorker"
     }
     override suspend fun doWork(): Result {
-
         val appContext = applicationContext
         return try{
             Result.success()
@@ -38,6 +38,4 @@ class RefreshGeofenceWorker(appContext: Context, params: WorkerParameters):
             Result.retry()
         }
     }
-
-
 }

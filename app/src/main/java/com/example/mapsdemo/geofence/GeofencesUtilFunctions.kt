@@ -16,7 +16,7 @@ class GeofencesUtilFunctions(applicationContext: Context, activity: Activity) {
     val activity = activity
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(applicationContext, GeofenceBroadcastReceiver::class.java)
-        PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
     private  var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(activity)
     @SuppressLint("MissingPermission")

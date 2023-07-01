@@ -6,4 +6,5 @@ import androidx.room.PrimaryKey
 data class NotSavedSpeedCamera(var latitude : Double,
                                var longitude : Double,
                                var radius : Double,
-                               @PrimaryKey val id : String)
+                               @PrimaryKey val id : String,
+                                var creator : String)

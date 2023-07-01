@@ -8,11 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -23,7 +18,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.provider.Settings
-import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -32,8 +26,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
-import com.example.mapsdemo.AccelerometerListener
 import com.example.mapsdemo.BuildConfig
 import com.example.mapsdemo.MainViewModel
 import com.example.mapsdemo.R
@@ -45,7 +37,6 @@ import com.example.mapsdemo.databinding.ActivityMapsBinding
 import com.example.mapsdemo.geofence.GeofencesUtilFunctions
 import com.example.mapsdemo.geofence.GeofencingConstants
 import com.example.mapsdemo.main_screen.MainActivity
-import com.example.mapsdemo.main_screen.WelcomeFragment
 import com.example.mapsdemo.utils.BumpSavedNotification
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -55,14 +46,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
-import kotlin.math.sqrt
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
@@ -78,42 +67,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     private lateinit var geofencesUtilFunctions : GeofencesUtilFunctions
     private lateinit var bumpsDatabaseReference: DatabaseReference
     private lateinit var speedCameraDatabaseReference: DatabaseReference
-
+    private var distance : Int = 100
     private var bluetoothDevice : BluetoothDevice? = null
     var bumps = arrayListOf<Bump>()
     var speedCameras = arrayListOf<SpeedCamera>()
-    private lateinit var sensorManager : SensorManager
-    private lateinit var accelerometerSensor : Sensor
-    val listener = object: SensorEventListener {
-        var bumpDetected : Boolean = false
-        val THRESHOLD = 30
-        val BUMP_DURATION_MILLISECONDS = 5000L
-        override fun onSensorChanged(event: SensorEvent?) {
-            // Handle accelerometer sensor data here
-            if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-                val x = event.values[0]
-                val y = event.values[1]
-                val z = event.values[2]
-                val acceleration = sqrt(x*x + y*y + z*z)
-
-                if (acceleration > THRESHOLD && !bumpDetected) {
-                    bumpDetected = true
-                    Timer().schedule(BUMP_DURATION_MILLISECONDS){
-                        bumpDetected = false
-                    }
-                    onBumpDetected()
-                }
-            }
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-
-        }
-    }
         val handler = object : Handler(){
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
-            Toast.makeText(applicationContext, msg?.data?.getString("msg"), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(applicationContext, msg?.data?.getString("msg"), Toast.LENGTH_SHORT).show()
 //            Toast.makeText(applicationContext, msg.data.getString("error"), Toast.LENGTH_SHORT).show()
             if (msg.data.getString("msg") == "y"){
                 addBump()
@@ -126,8 +87,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, this);
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -135,9 +94,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         val viewModelFactory = ViewModelFactory(application )
         viewModel = ViewModelProvider(this , viewModelFactory).get(MainViewModel::class.java)
         geofencesUtilFunctions = GeofencesUtilFunctions(applicationContext, this)
+
         bumpsDatabaseReference = FirebaseDatabase.getInstance().getReference("Bumps")
+
         speedCameraDatabaseReference = FirebaseDatabase.getInstance().getReference("SpeedCamera")
-        sensorManager.registerListener(listener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
         if (BluetoothFragment.m_bluetoothAdapter != null){
             val bluetoothChatService = BluetoothChatService(applicationContext, BluetoothFragment.m_bluetoothAdapter!!, handler)
             m_bluetoothChatService = bluetoothChatService
@@ -153,13 +113,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
 //            addSpeedCamera()
 //        }
         refreshData()
+//        updateFirebaseDatabase()
 
 //        refreshBumpList()
         //Observe changes to bumps list and Update Geofences
         viewModel.bumps.observe(this, Observer {
             geofencesUtilFunctions.removeGeofences()
             it?.forEach {
-                geofencesUtilFunctions.addGeofence(it.latitude, it.longitude, it.radius, it.id)
+                geofencesUtilFunctions.addGeofence(it.latitude, it.longitude, distance.toDouble(), it.id)
                 bumps.add(it)
             }
         })
@@ -194,12 +155,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 }
             }
         }
+
+        val sharedPreferences = this.getSharedPreferences(getString(R.string.app_name),
+            Context.MODE_PRIVATE)
+        val radius = sharedPreferences.getInt(getString(R.string.shared_pref_distance_key), Context.MODE_PRIVATE)
+        if(radius == null){
+            distance = 100
+        }
+        else{
+            distance = radius
+        }
     }
 
     private fun addSpeedCamera() {
         if(foregroundAndBackgroundLocationPermissionApproved() && (latitude!= null) && (longitude!=null)){
             val id  = speedCameraDatabaseReference.push().key
-            val speedCamera = SpeedCamera(latitude!! , longitude!!, GeofencingConstants.CAMERA_GEOFENCE_RADIUS_IN_METERS.toDouble(), id!!)
+            val speedCamera = SpeedCamera(latitude!! , longitude!!, GeofencingConstants.CAMERA_GEOFENCE_RADIUS_IN_METERS.toDouble(), id!!,
+                FirebaseAuth.getInstance().currentUser?.uid.toString())
             if(viewModel.validateLocationData(speedCamera)&& viewModel.validateUniqueSpeedCamera(speedCamera, speedCameras)){
                 speedCameraDatabaseReference.child(id!!).setValue(speedCamera)
                     .addOnSuccessListener {
@@ -249,10 +221,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 }
                 true
             }
-            R.id.stop_location_tracking ->{
-
-                true
-            }
             else ->
                 super.onOptionsItemSelected(item)
         }
@@ -266,26 +234,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 ?.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.bump_notice))
         }
         mMap.setOnMarkerClickListener(GoogleMap.OnMarkerClickListener { marker ->
-            val snackbar = Snackbar.make(findViewById(R.id.map), "Is there a bump here?", Snackbar.LENGTH_LONG)
-                .setAction("No") {
+            val snackbar = Snackbar.make(findViewById(R.id.map), "Do you want to delete this bump?", Snackbar.LENGTH_LONG)
+                .setAction("Delete") {
                     // Responds to click on the action
                     val position = marker.position
                     bumps.forEach { bump ->
                         if (bump.latitude == position.latitude && bump.longitude == position.longitude){
                             val id = bump.id
-                            var downVotes = bump.DownVotes
-                            var upVotes = bump.UpVotes
-                            downVotes ++
-                            Toast.makeText(this, "Data Updated : $downVotes and olad data ${bump.DownVotes}", Toast.LENGTH_SHORT).show()
-                            if (downVotes - upVotes >= 5){
-                                bumpsDatabaseReference.child(id).setValue(null)
-                                marker.remove()
-                                Toast.makeText(applicationContext, "Bump is removed", Toast.LENGTH_LONG).show()
-                            }
-                            val updatedBumpData = bump
-                            updatedBumpData.DownVotes = downVotes
-                            bumpsDatabaseReference.child(id).setValue(updatedBumpData)
-                            Toast.makeText(this, "Data Updated : $downVotes", Toast.LENGTH_SHORT).show()
+//                            var downVotes = bump.DownVotes
+//                            var upVotes = bump.UpVotes
+//                            downVotes ++
+//                            Toast.makeText(this, "Data Updated : $downVotes and olad data ${bump.DownVotes}", Toast.LENGTH_SHORT).show()
+//                            if (downVotes - upVotes >= 5){
+                                bumpsDatabaseReference.child(id).removeValue()
+                                    .addOnSuccessListener{
+                                    Toast.makeText(this, "Bump Deleted", Toast.LENGTH_LONG).show()
+                                        marker.remove()
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this, "Bump Not Deleted", Toast.LENGTH_LONG).show()
+                                    }
+//                            val updatedBumpData = bump
+//                            updatedBumpData.DownVotes = downVotes
+//                            bumpsDatabaseReference.child(id).setValue(updatedBumpData)
+//                            Toast.makeText(this, "Data Updated : $downVotes", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -305,10 +277,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     }
 
     private fun addBump() {
+        getLocation()
+        val char = "n${distance}\n"
+        val out = char.toByteArray()
+        m_bluetoothChatService?.write(out)
+        BumpSavedNotification(applicationContext)
         if(foregroundAndBackgroundLocationPermissionApproved() && (latitude!= null) && (longitude!=null)){
                 val id = bumpsDatabaseReference.push().key!!
                 val bump = Bump(latitude!!, longitude!!,
-                    GeofencingConstants.GEOFENCE_RADIUS_IN_METERS.toDouble(), id, 0,0)
+                    id, 0,0,
+                    FirebaseAuth.getInstance().currentUser?.uid.toString())
                 if (viewModel.validateBumpData(bump) && viewModel.validateUniqueBump(bump, bumps)) {
                     bumpsDatabaseReference.child(id!!).setValue(bump)
                         .addOnSuccessListener {
@@ -372,7 +350,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 bumps = viewModel.getBumpsFromLocalDatabase() as ArrayList<Bump>
                 Timer().schedule(5000){
                     bumps.forEach {
-                        geofencesUtilFunctions.addGeofence(it.latitude, it.longitude, it.radius, it.id)
+                        geofencesUtilFunctions.addGeofence(it.latitude, it.longitude, distance.toDouble(), it.id)
                     }
                 }
             }
@@ -401,6 +379,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             Toast.makeText(applicationContext, "Database not updated", Toast.LENGTH_LONG).show()
     }
     private fun refreshBumpList() {
+
         bumpsDatabaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val bumpList = arrayListOf<BumpData>()
@@ -410,8 +389,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                         val bump = snap.getValue(BumpData::class.java)
                         bumpList.add(bump!!)
                         geofencesUtilFunctions
-                            .addGeofence(bump.latitude!!, bump.longitude!!, bump.radius!!, bump.id!!)
-                        bumps.add(Bump(bump.latitude!!, bump.longitude!!, bump.radius!!, bump.id!!, bump.upVotes!!, bump.downVotes!!))
+                            .addGeofence(bump.latitude!!, bump.longitude!!, distance.toDouble(), bump.id!!)
+                        bumps.add(Bump(bump.latitude!!, bump.longitude!!, bump.id!!, bump.upVotes!!, bump.downVotes!!,
+                            FirebaseAuth.getInstance().currentUser?.uid.toString()))
                     }
                 }
             }
@@ -429,9 +409,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                 if (snapshot.exists()){
                     geofencesUtilFunctions.removeGeofences()
                     for (snap in snapshot.children){
-                        val bump = snap.getValue(OldBump::class.java)
-                        val newBump = BumpData(bump?.latitude, bump?.longitude, bump?.radius, bump?.id, 0,0)
+                        val bump = snap.getValue(OldBumpData::class.java)
+                        val newBump = BumpData(bump?.latitude, bump?.longitude, bump?.id,
+                            bump?.upVotes,bump?.downVotes, FirebaseAuth.getInstance().currentUser?.uid.toString())
                         bumpsDatabaseReference.child(bump?.id!!).setValue(newBump)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private fun updateFirebaseSpeedCameraDatabase(){
+        speedCameraDatabaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val bumpList = arrayListOf<SpeedCameraData>()
+                if (snapshot.exists()){
+//                    geofencesUtilFunctions.removeGeofences()
+                    for (snap in snapshot.children){
+                        val speedCamera = snap.getValue(SpeedCameraData::class.java)
+                        val newSpeedCamera = SpeedCameraData(speedCamera?.latitude, speedCamera?.longitude, speedCamera?.radius,
+                            speedCamera?.id, FirebaseAuth.getInstance().currentUser?.uid.toString())
+                        speedCameraDatabaseReference.child(speedCamera?.id!!).setValue(newSpeedCamera)
                     }
                 }
             }
@@ -444,7 +446,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
 
     override fun onStop() {
         super.onStop()
-        sensorManager.unregisterListener(listener)
     }
 
     private fun refreshSpeedCameraList(){
@@ -455,7 +456,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                         val speedCamera = snap.getValue(SpeedCameraData::class.java)
                         geofencesUtilFunctions.addGeofence(speedCamera?.latitude!!,speedCamera?.longitude!!, speedCamera?.radius!!,
                         speedCamera?.id!!)
-                        speedCameras.add(SpeedCamera(speedCamera.latitude!!, speedCamera.longitude!!, speedCamera.radius!!, speedCamera.id!!))
+                        speedCameras.add(SpeedCamera(speedCamera.latitude!!, speedCamera.longitude!!, speedCamera.radius!!, speedCamera.id!!,
+                            FirebaseAuth.getInstance().currentUser?.uid.toString()))
                     }
                 }
             }
@@ -595,15 +597,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     @SuppressLint("MissingPermission")
     private fun getLocation() {
         val locationRequest = LocationRequest().apply {
-            priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+            priority = Priority.PRIORITY_HIGH_ACCURACY
         }
         val locationCallback = object : LocationCallback(){
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 if (locationResult !=null){
                     Log.i(TAG, "Got User's location")
-                    latitude = locationResult.locations.get((locationResult.locations.size).minus(1)).latitude
-                    longitude = locationResult.locations.get((locationResult.locations.size).minus(1)).longitude
+                    latitude = locationResult.lastLocation?.latitude
+                    longitude = locationResult.lastLocation?.longitude
                     Log.i(TAG , "location is $latitude $longitude")
                     val latLng = LatLng(latitude ?: -33.870453, longitude?:151.208755)
                     val zoom = 16.5f
@@ -622,7 +624,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
         locationManager = applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000L,
             1f, this)
-
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000L, 1f, this)
     }
 
 

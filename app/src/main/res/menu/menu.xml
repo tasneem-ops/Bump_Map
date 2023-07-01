@@ -13,9 +13,4 @@
         android:id="@+id/update_database"
         android:title="Update Offline Database"
         app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/stop_location_tracking"
-        android:title="Stop Location Tracker"
-        app:showAsAction="never"/>
 </menu>

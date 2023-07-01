@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.mapsdemo.R
@@ -14,9 +15,11 @@ import com.example.mapsdemo.bluetooth.BluetoothFragmentDirections
 import com.example.mapsdemo.databinding.FragmentSettingsBinding
 import com.example.mapsdemo.map_screen.MapsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.*
 
 class SettingsFragment : Fragment() {
         private lateinit var binding : FragmentSettingsBinding
+        private var sensitivity : String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,12 +32,13 @@ class SettingsFragment : Fragment() {
             val sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
             sharedPreferences.edit().putInt(getString(R.string.shared_pref_distance_key), distance.toInt()).commit()
         }
-//        binding.testBtn.setOnClickListener {
-//            val sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.app_name),
-//                Context.MODE_PRIVATE)
-//            val distance = sharedPreferences.getInt(getString(R.string.shared_pref_distance_key), Context.MODE_PRIVATE)
-//            Toast.makeText(requireActivity(), "Distance Saved : $distance", Toast.LENGTH_SHORT).show()
-//        }
+
+        binding.testBtn.setOnClickListener {
+            val sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.app_name),
+                Context.MODE_PRIVATE)
+            val distance = sharedPreferences.getInt(getString(R.string.shared_pref_distance_key), Context.MODE_PRIVATE)
+            Toast.makeText(requireActivity(), "Distance Saved : $distance", Toast.LENGTH_SHORT).show()
+        }
         return binding.root
     }
 

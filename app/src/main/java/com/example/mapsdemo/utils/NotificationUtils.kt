@@ -70,7 +70,7 @@ fun sendBumpNotification(context: Context, latitude : Double, longitude: Double)
     downVoteIntent.putExtra("longitude", longitude)
     val pendingDownIntent = PendingIntent.getBroadcast(context, 3, downVoteIntent, PendingIntent.FLAG_CANCEL_CURRENT)
 
-//    build the notification object with the data to be shown
+    //build the notification object with the data to be shown
     val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         .setSmallIcon(R.mipmap.ic_launcher)
         .setContentTitle("Bump!!")
@@ -89,7 +89,7 @@ fun sendBumpNotification(context: Context, latitude : Double, longitude: Double)
 fun BumpSavedNotification(context: Context) {
     val notificationManager = context
         .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    val notificationSound = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.raw.bumpdetected}")
+    val notificationSound = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.raw.bumpsaved}")
     val attributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
         .build()

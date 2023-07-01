@@ -47,7 +47,7 @@ class LocalRepository(val database: BumpDatabase,
                     if (snapshot.exists()){
                         for (snap in snapshot.children){
                             val bumpData = snap.getValue(BumpData::class.java)
-                            val bump = Bump(bumpData?.latitude!!, bumpData?.longitude!!, bumpData?.radius!!, bumpData?.id!!, bumpData.upVotes!!, bumpData.downVotes!!)
+                            val bump = Bump(bumpData?.latitude!!, bumpData?.longitude!!, bumpData?.id!!, bumpData.upVotes!!, bumpData.downVotes!!, bumpData.creator!!)
                             bumpList.add(bump)
                         }
                     }
@@ -65,19 +65,19 @@ class LocalRepository(val database: BumpDatabase,
         database.bumpDao.getBumpById(id)
     }
 
-    override suspend fun clearBumpsCache() = withContext(ioDispatcher){
-        database.notSavedBumpsDao.clearBumpsCache()
-    }
-
-    override suspend fun getCahcedBumps() : List<Bump> =
-        withContext(ioDispatcher){
-            database.notSavedBumpsDao.getCachedBumps()
-        }
-
-    override suspend fun saveCachedBump(bump: Bump) =
-        withContext(ioDispatcher){
-        database.notSavedBumpsDao.saveCachedBump(bump)
-    }
+//    override suspend fun clearBumpsCache() = withContext(ioDispatcher){
+//        database.notSavedBumpsDao.clearBumpsCache()
+//    }
+//
+//    override suspend fun getCahcedBumps() : List<Bump> =
+//        withContext(ioDispatcher){
+//            database.notSavedBumpsDao.getCachedBumps()
+//        }
+//
+//    override suspend fun saveCachedBump(bump: Bump) =
+//        withContext(ioDispatcher){
+//        database.notSavedBumpsDao.saveCachedBump(bump)
+//    }
 
     override suspend fun getAllSpeedCamera(): List<SpeedCamera> = withContext(ioDispatcher) {
         database.speedCameraDao.getAllSpeedCamera()

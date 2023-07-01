@@ -11,9 +11,9 @@ interface DataSource {
     suspend fun clear()
     suspend fun refreshBumps(): List<Bump>
     suspend fun getBumpById(id : String): Bump?
-    suspend fun clearBumpsCache()
-    suspend fun getCahcedBumps() : List<Bump>
-    suspend fun saveCachedBump(bump: Bump)
+//    suspend fun clearBumpsCache()
+//    suspend fun getCahcedBumps() : List<Bump>
+//    suspend fun saveCachedBump(bump: Bump)
 
     suspend fun getAllSpeedCamera(): List<SpeedCamera>
     suspend fun getSpeedCameraById(id : String): SpeedCamera?

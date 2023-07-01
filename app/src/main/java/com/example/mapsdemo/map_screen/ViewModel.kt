@@ -33,7 +33,6 @@ class MainViewModel(application: Application)
         get() = _cachedBumps
 
 
-
     fun refreshBumps(context: Context, activity: MapsActivity) {
         viewModelScope.launch {
             _bumps.value = repository.refreshBumps()
@@ -50,7 +49,7 @@ class MainViewModel(application: Application)
                     viewModelScope.launch {
                         bumps.value?.forEach {
                             repository.saveBump(it)
-                            GeofencesUtilFunctions(context, activity).addGeofence(it.latitude, it.longitude, it.radius, it.id)
+//                            GeofencesUtilFunctions(context, activity).addGeofence(it.latitude, it.longitude, it.radius, it.id)
                         }
                     }
                 }
@@ -176,30 +175,30 @@ class MainViewModel(application: Application)
     fun setBumpsList(x: List<Bump>){
         _bumps.value = x
     }
-
-    fun saveCachedBump(bump: Bump){
-        viewModelScope.launch {
-            repository.saveCachedBump(bump)
-        }
-    }
-
-    fun clearCache(){
-        viewModelScope.launch {
-            repository.clearBumpsCache()
-        }
-    }
-
-    fun getCahcedBumps() : List<Bump> {
-        viewModelScope.launch{
-            _cachedBumps.value = repository.getCahcedBumps()
-        }
-
-        if (_cachedBumps.value != null){
-            return _cachedBumps.value!!
-        }
-        else{
-            return emptyList()
-        }
-    }
+//
+//    fun saveCachedBump(bump: Bump){
+//        viewModelScope.launch {
+//            repository.saveCachedBump(bump)
+//        }
+//    }
+//
+//    fun clearCache(){
+//        viewModelScope.launch {
+//            repository.clearBumpsCache()
+//        }
+//    }
+//
+//    fun getCahcedBumps() : List<Bump> {
+//        viewModelScope.launch{
+//            _cachedBumps.value = repository.getCahcedBumps()
+//        }
+//
+//        if (_cachedBumps.value != null){
+//            return _cachedBumps.value!!
+//        }
+//        else{
+//            return emptyList()
+//        }
+//    }
 
 }

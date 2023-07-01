@@ -9,4 +9,5 @@ data class NotSavedBumps(var latitude : Double,
                          var radius : Double,
                          @PrimaryKey val id : String,
                          var UpVotes : Int,
-                         var DownVotes : Int)
+                         var DownVotes : Int,
+                         var creator : String)
