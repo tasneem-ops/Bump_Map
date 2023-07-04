@@ -28,17 +28,23 @@ class SettingsFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentSettingsBinding.inflate(layoutInflater)
         binding.saveBtn.setOnClickListener {
-            val distance = binding.distanceEditText.text.toString()
+            var distance : Int = 60
+            if (binding.checkBox.isChecked){
+                distance = 60
+            }
+            else{
+                distance = binding.distanceEditText.text.toString().toInt()
+            }
             val sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
-            sharedPreferences.edit().putInt(getString(R.string.shared_pref_distance_key), distance.toInt()).commit()
+            sharedPreferences.edit().putInt(getString(R.string.shared_pref_distance_key), distance).commit()
         }
 
-        binding.testBtn.setOnClickListener {
-            val sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.app_name),
-                Context.MODE_PRIVATE)
-            val distance = sharedPreferences.getInt(getString(R.string.shared_pref_distance_key), Context.MODE_PRIVATE)
-            Toast.makeText(requireActivity(), "Distance Saved : $distance", Toast.LENGTH_SHORT).show()
-        }
+//        binding.testBtn.setOnClickListener {
+//            val sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.app_name),
+//                Context.MODE_PRIVATE)
+//            val distance = sharedPreferences.getInt(getString(R.string.shared_pref_distance_key), Context.MODE_PRIVATE)
+//            Toast.makeText(requireActivity(), "Distance Saved : $distance", Toast.LENGTH_SHORT).show()
+//        }
         return binding.root
     }
 

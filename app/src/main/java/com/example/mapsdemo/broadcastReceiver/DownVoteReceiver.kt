@@ -3,6 +3,7 @@ package com.example.mapsdemo.broadcastReceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import com.example.mapsdemo.data.model.BumpData
 import com.google.firebase.database.DataSnapshot
@@ -28,23 +29,14 @@ class DownVoteReceiver : BroadcastReceiver() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d("BC Receiver", "Data retreival failed")
             }
         })
         bumpList.forEach { bump ->
             if (bump.latitude == latitude && bump.longitude == longitude){
                 val id = bump.id
                 var downVotes = bump.downVotes
-                var upVotes = bump.upVotes
                 downVotes = downVotes?.plus(1)
-                if (downVotes != null) {
-                    if (downVotes - upVotes!! >= 5){
-                        if (id != null) {
-                            bumpsDatabaseReference.child(id).setValue(null)
-                        }
-                        Toast.makeText(context, "Bump is removed", Toast.LENGTH_LONG).show()
-                    }
-                }
                 val updatedBumpData = bump
                 updatedBumpData.downVotes = downVotes
                 if (id != null) {

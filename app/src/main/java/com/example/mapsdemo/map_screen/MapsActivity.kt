@@ -38,6 +38,7 @@ import com.example.mapsdemo.geofence.GeofencesUtilFunctions
 import com.example.mapsdemo.geofence.GeofencingConstants
 import com.example.mapsdemo.main_screen.MainActivity
 import com.example.mapsdemo.utils.BumpSavedNotification
+import com.example.mapsdemo.utils.sendBumpNotification
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
@@ -160,11 +161,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             Context.MODE_PRIVATE)
         val radius = sharedPreferences.getInt(getString(R.string.shared_pref_distance_key), Context.MODE_PRIVATE)
         if(radius == null){
-            distance = 100
+            distance = 60
         }
         else{
             distance = radius
         }
+
+        requestForegroundAndBackgroundLocationPermissions()
     }
 
     private fun addSpeedCamera() {
@@ -397,7 +400,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d(TAG, "data retreival is cancelled")
             }
         })
     }
@@ -418,7 +421,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d(TAG, "data update is cancelled")
             }
         })
     }
@@ -439,7 +442,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d(TAG, "data update is cancelled")
             }
         })
     }
@@ -463,7 +466,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d(TAG, "data retreival is cancelled")
             }
         })
     }

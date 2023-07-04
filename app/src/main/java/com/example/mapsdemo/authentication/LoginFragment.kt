@@ -54,6 +54,11 @@ class LoginFragment : Fragment() {
                 this.findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
         }
 
+        binding.guest.setOnClickListener {
+            val mainActivityIntent = Intent(requireContext(), MainActivity::class.java)
+            startActivity(mainActivityIntent)
+        }
+
 
     }
     private fun loginUser(email: String, password: String) {

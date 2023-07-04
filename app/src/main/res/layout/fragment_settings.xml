@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:text="Distance of Bump "
+                android:text="Warning Distance of Bump"
                 android:textStyle="bold" />
 
             <EditText
@@ -46,24 +46,25 @@
                 android:layout_below="@+id/distance_label"
                 android:layout_centerHorizontal="true"
                 android:ems="10"
-                android:hint="Distance"
+                android:hint="Type a Distance"
                 android:inputType="number"
                 android:layout_marginBottom="16dp"/>
 
+
+
+            <CheckBox
+                android:id="@+id/checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set as default (60 m)"
+                android:layout_below="@id/distance_editText"/>
             <Button
                 android:id="@+id/save_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:text="Save"
-                android:layout_below="@id/distance_editText"/>
-            <Button
-                android:id="@+id/test_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="Test"
-                android:layout_below="@id/save_btn"/>
+                android:layout_below="@id/checkBox"/>
 
 
         </RelativeLayout>
