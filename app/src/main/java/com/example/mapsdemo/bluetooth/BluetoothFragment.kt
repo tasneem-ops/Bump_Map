@@ -69,21 +69,23 @@ class BluetoothFragment : Fragment() {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
         }
-//        val _pairedDevices: Set<BluetoothDevice>? = m_bluetoothAdapter?.bondedDevices
-//        var pairedDevices : MutableList<Bluetooth_Device> = mutableListOf()
-//        _pairedDevices?.forEach { device ->
-//            pairedDevices.add(Bluetooth_Device(device.name, device.address))
-//        }
-//        adapter.submitList(pairedDevices)
-//        binding.connectBtn.setOnClickListener {
-//            if (m_address != null){
-//                val device = findDeviceByAddress(m_address!!, _pairedDevices)
-//                if (device !=null){
-//                    val intent = MapsActivity.newIntent(requireContext(), device)
-//                    startActivity(intent)
-//                }
-//            }
-//        }
+        if(android.os.Build.VERSION.SDK_INT <= 30){
+            val _pairedDevices: Set<BluetoothDevice>? = m_bluetoothAdapter?.bondedDevices
+            var pairedDevices : MutableList<Bluetooth_Device> = mutableListOf()
+            _pairedDevices?.forEach { device ->
+                pairedDevices.add(Bluetooth_Device(device.name, device.address))
+            }
+            adapter.submitList(pairedDevices)
+            binding.connectBtn.setOnClickListener {
+                if (m_address != null){
+                    val device = findDeviceByAddress(m_address!!, _pairedDevices)
+                    if (device !=null){
+                        val intent = MapsActivity.newIntent(requireContext(), device)
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
         return binding.root
     }
 

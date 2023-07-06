@@ -33,6 +33,7 @@ class GeofencesUtilFunctions(applicationContext: Context, activity: Activity) {
 
         val geofencingRequest = GeofencingRequest.Builder()
             .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL)
+            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
             .addGeofence(geofence)
             .build()
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {

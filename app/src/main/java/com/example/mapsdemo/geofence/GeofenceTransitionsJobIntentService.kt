@@ -98,7 +98,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                             this@GeofenceTransitionsJobIntentService
                         , latitude, longitude
                         )
-                        sendCommand("n${distance}\n")
+                        sendCommand("B${distance}\n")
                     }
                 }
             }
@@ -108,7 +108,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                     this@GeofenceTransitionsJobIntentService
                     , latitude, longitude
                 )
-                sendCommand("n${distance}\n")
+                sendCommand("B${distance}\n")
             }
             }
         }

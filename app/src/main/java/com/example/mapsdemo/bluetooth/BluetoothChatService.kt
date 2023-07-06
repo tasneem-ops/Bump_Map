@@ -91,6 +91,7 @@ class BluetoothChatService() {
                 // until it succeeds or throws an exception.
                 try {
                     socket.connect()
+                    Log.d("BT", "Connected finally!!!!!")
                 }
                 catch (e:Exception){
                     Log.d(TAG, "${e.message}")

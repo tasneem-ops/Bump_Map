@@ -68,7 +68,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
     private lateinit var geofencesUtilFunctions : GeofencesUtilFunctions
     private lateinit var bumpsDatabaseReference: DatabaseReference
     private lateinit var speedCameraDatabaseReference: DatabaseReference
-    private var distance : Int = 100
+    private var distance : Int = 60
     private var bluetoothDevice : BluetoothDevice? = null
     var bumps = arrayListOf<Bump>()
     var speedCameras = arrayListOf<SpeedCamera>()
@@ -281,7 +281,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
 
     private fun addBump() {
         getLocation()
-        val char = "n${distance}\n"
+
+        val char = "B${distance}\n"
         val out = char.toByteArray()
         m_bluetoothChatService?.write(out)
         BumpSavedNotification(applicationContext)
@@ -306,7 +307,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
                                 Toast.LENGTH_LONG
                             ).show()
                         }
-//                geofencesUtilFunctions.addGeofence(latitude!!, longitude!!)
+//                geofencesUtilFunctions.addGeofence(latitude!!, longitude!!, distance.toDouble(), id)
                 }
                 else{
                     Toast.makeText(applicationContext, "Bump data is not valid", Toast.LENGTH_SHORT).show()
@@ -663,6 +664,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
 
     override fun onMapsSdkInitialized(p0: MapsInitializer.Renderer) {
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestForegroundAndBackgroundLocationPermissions()
     }
 
 
